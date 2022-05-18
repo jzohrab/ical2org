@@ -1,0 +1,39 @@
+## Configuration.
+
+## Note: this file cannot contain any apostrophes in the comments, or
+## xargs complains.
+
+# maximum age in days for entries to be output: set this to -1 to
+# get all entries or to N>0 to only get enties that start or end
+# less than N days ago
+MAX_AGE=7
+
+# set to 1 or 0 to yes or not output a header block with TITLE,
+# AUTHOR, EMAIL etc...
+HEADER=1
+
+# set to 1 or 0 to yes or not output the original ical preamble as
+# comment
+PREAMBLE=1
+
+# set to 1 to output time and summary as one line starting with
+# the time (value 1) or to 0 to output the summary as first line
+# and the date and time info as a later line (after the property
+# drawer or org complains)
+CONDENSE=0
+
+# set to 1 or 0 to yes or not output the original ical entry as a
+# comment (mostly useful for debugging purposes)
+ORIGINAL=1
+
+# google truncates long subjects with ... which is misleading in
+# an org file: it gives the unfortunate impression that an
+# expanded entry is still collapsed; value 1 will trim those
+# ... and value 0 does not touch them
+TRIMDOTS=1
+
+AUTHOR="Your Name"
+EMAILADDRESS="Your.address@thing.com"
+TITLE="Main title of the Org file"
+CALENDARNAME="calendar/category name for display in org-mode"
+FILETAGS="any tags for this calendar (e.g. PERSONAL)"

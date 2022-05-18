@@ -67,49 +67,17 @@ BEGIN {
     # map of people attending a given event
     people_attending[0];
 
-    # maximum age in days for entries to be output: set this to -1 to
-    # get all entries or to N>0 to only get enties that start or end
-    # less than N days ago
-    max_age = 7;
-
-    # set to 1 or 0 to yes or not output a header block with TITLE,
-    # AUTHOR, EMAIL etc...
-    header = 1;
-
-    # set to 1 or 0 to yes or not output the original ical preamble as
-    # comment
-    preamble = 1;
-
-    # set to 1 to output time and summary as one line starting with
-    # the time (value 1) or to 0 to output the summary as first line
-    # and the date and time info as a later line (after the property
-    # drawer or org complains)
-    condense = 0;
-
-    # set to 1 or 0 to yes or not output the original ical entry as a
-    # comment (mostly useful for debugging purposes)
-    original = 1;
-
-    # google truncates long subjects with ... which is misleading in
-    # an org file: it gives the unfortunate impression that an
-    # expanded entry is still collapsed; value 1 will trim those
-    # ... and value 0 doesn't touch them
-    trimdots = 1;
-
-    # change this to your name
-    author = ENVIRON["AUTHOR"] != "" ? ENVIRON["AUTHOR"] : "Marc Sherry"
-
-    # and to your email address
-    emailaddress = ENVIRON["EMAIL"] != "" ? ENVIRON["EMAIL"] : "unknown"
-
-    # main title of the Org file
-    title = ENVIRON["TITLE"] != "" ? ENVIRON["TITLE"] : "Main Google calendar entries"
-
-    # calendar/category name for display in org-mode
-    calendarname = ENVIRON["CALENDAR"] != "" ? ENVIRON["CALENDAR"] : "unknown"
-
-    # any tags for this calendar (e.g. "WORK" or "PERSONAL")
-    filetags = ENVIRON["FILETAGS"] != "" ? ENVIRON["FILETAGS"] : "unknown"
+    max_age = ENVIRON["MAX_AGE"];
+    header = ENVIRON["HEADER"];
+    preamble = ENVIRON["PREAMBLE"];
+    condense = ENVIRON["CONDENSE"];
+    original = ENVIRON["ORIGINAL"];
+    trimdots = ENVIRON["TRIMDOTS"];
+    author = ENVIRON["AUTHOR"];
+    emailaddress = ENVIRON["EMAILADDRESS"];
+    title = ENVIRON["TITLE"];
+    calendarname = ENVIRON["CALENDARNAME"];
+    filetags = ENVIRON["FILETAGS"];
 
     # timezone offsets
     # TODO: this is stupid

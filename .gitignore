@@ -1,2 +1,9 @@
+# User config
+*.config
+
+# Junk in testing dir
+test/
+
+# Misc
 .DS_STORE
 *.egg-info
