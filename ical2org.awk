@@ -73,6 +73,8 @@ BEGIN {
     condense = ENVIRON["CONDENSE"];
     original = ENVIRON["ORIGINAL"];
     trimdots = ENVIRON["TRIMDOTS"];
+    printdebug = ENVIRON["PRINTDEBUG"];
+    removepastentries = ENVIRON["REMOVEPASTENTRIES"];
     author = ENVIRON["AUTHOR"];
     emailaddress = ENVIRON["EMAILADDRESS"];
     title = ENVIRON["TITLE"];
@@ -148,6 +150,7 @@ BEGIN {
     # http://unix.stackexchange.com/a/147958/129055
     intfreq = "" # the interval and frequency for repeating org timestamps
     lasttimestamp = -1;
+    debugmsgs = "";
     location = ""
     rrend = ""
     status = ""
@@ -197,6 +200,7 @@ BEGIN {
 
 /^DTSTART;VALUE=DATE[^-]/ {
     date = datestring($2);
+    debugmsgs = debugmsgs "; a)DTSTART: " lasttimestamp
 }
 
 /^DTEND;VALUE=DATE[^-]/ {
@@ -204,6 +208,7 @@ BEGIN {
     end_date = datestring($2, 1);
     if ( issameday )
         end_date = ""
+    debugmsgs = debugmsgs "; a)DTEND: " lasttimestamp
 }
 
 
@@ -218,6 +223,7 @@ BEGIN {
     offset = tz_offsets[tz]
 
     date = datetimestring($2, offset);
+    debugmsgs = debugmsgs "; c)DTSTART: " lasttimestamp
     # print date;
 
     if (date != "" && got_end_date) {
@@ -236,7 +242,11 @@ BEGIN {
     }
     offset = tz_offsets[tz]
 
+    debugmsgs = debugmsgs "; d)DTEND offset: " offset
+    debugmsgs = debugmsgs "; d)DTEND tz: " tz
+    debugmsgs = debugmsgs "; d)DTEND item2: " $2
     end_date = datetimestring($2, offset);
+    debugmsgs = debugmsgs "; d)DTEND: " lasttimestamp
     got_end_date = 1
 
     if (date != "" && got_end_date) {
@@ -253,6 +263,7 @@ BEGIN {
     offset = tz_offsets[tz]
 
     date = datetimestring($2, offset);
+    debugmsgs = debugmsgs "; e)DTSTART: " lasttimestamp
     # print date;
 
     if (date != "" && got_end_date) {
@@ -268,6 +279,7 @@ BEGIN {
     offset = tz_offsets[tz]
 
     end_date = datetimestring($2, offset);
+    debugmsgs = debugmsgs "; f)DTEND: " lasttimestamp
     got_end_date = 1
 
     if (date != "" && got_end_date) {
@@ -370,7 +382,10 @@ BEGIN {
     # print "systime(): " systime()
 
     is_duplicate = (id in UIDS);
-    if(is_duplicate == 0 && (max_age<0 || intfreq != "" || ( lasttimestamp>0 && systime()<lasttimestamp+max_age_seconds )) )
+    is_past = (lasttimestamp>0 && (systime() > lasttimestamp));
+    should_remove = is_past && removepastentries;
+
+    if(is_duplicate == 0 && !should_remove && (max_age<0 || intfreq != "" || ( lasttimestamp>0 && systime()<lasttimestamp+max_age_seconds )) )
     {
         if (attending != attending_types["NOT_ATTENDING"]) {
             # build org timestamp
@@ -417,8 +432,18 @@ BEGIN {
                 print gensub("^[ ]+", "", "g", unescape(entry, 1));
 
             # output original entry if requested by 'original' config option
-            if (original)
+            if (original) {
                 print "** COMMENT original iCal entry\n", gensub("\r", "", "g", icalentry)
+            }
+
+            if (printdebug) {
+                print "** DEBUGGING"
+                print "date: " date;
+                print "systime:       " systime();
+                print "lasttimestamp: " lasttimestamp;
+                print "debugmsgs: " debugmsgs;
+                print "sys < last?    " (systime() < lasttimestamp);
+            }
         }
         UIDS[id] = 1;
     }
@@ -477,6 +502,9 @@ function datetimestring(input, offset)
     hour = a[4]
     min = a[5]
     sec = a[6]
+
+    debugmsgs = debugmsgs "; spec: " spec
+    debugmsgs = debugmsgs "; parts: " year" "month" "day" "hour" "min" "sec
     # print "spec :" spec
 
     if (offset > 0)
@@ -496,6 +524,7 @@ function datetimestring(input, offset)
         # attempt UTC offset correction
         spec = gensub("([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2}).*[\r]*", "\\1-\\2-\\3 \\4:\\5", "g", input);
         # print "==> spec:" spec;
+        debugmsgs = debugmsgs "; stamp <= 0, ??? spec: " spec
         return spec;
     }
 
@@ -509,6 +538,9 @@ function datetimestring(input, offset)
 
         # adjust the timestamp
         stamp = stamp + hh + mm
+        lasttimestamp = stamp
+
+        debugmsgs = debugmsgs "; utc, ??? stamp: " stamp
     }
 
     return strftime("%Y-%m-%d %a %H:%M", stamp);

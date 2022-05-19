@@ -32,6 +32,12 @@ ORIGINAL=1
 # ... and value 0 does not touch them
 TRIMDOTS=1
 
+# Print debugging stuff after entry? 1 = yes, 0 = no.
+PRINTDEBUG=1
+
+# Don't include items that have already past? 1 = yes, 0 = no.
+REMOVEPASTENTRIES=1
+
 AUTHOR="Your Name"
 EMAILADDRESS="Your.address@thing.com"
 TITLE="Main title of the Org file"
