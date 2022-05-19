@@ -376,14 +376,10 @@ BEGIN {
 
 /^END:VEVENT/ {
     #output event
-    # print "max_age: " max_age
-    # print "lasttimestamp: " lasttimestamp
-    # print "lasttimestamp+max_age_seconds: " lasttimestamp+max_age_seconds
-    # print "systime(): " systime()
 
     is_duplicate = (id in UIDS);
     is_past = (lasttimestamp>0 && (systime() > lasttimestamp));
-    should_remove = is_past && removepastentries;
+    should_remove = is_past && removepastentries && (intfreq == "");
 
     if(is_duplicate == 0 && !should_remove && (max_age<0 || intfreq != "" || ( lasttimestamp>0 && systime()<lasttimestamp+max_age_seconds )) )
     {
@@ -438,6 +434,10 @@ BEGIN {
 
             if (printdebug) {
                 print "** DEBUGGING"
+                # print "max_age: " max_age
+                # print "lasttimestamp: " lasttimestamp
+                # print "lasttimestamp + max: " lasttimestamp+max_age_seconds
+                # print "systime(): " systime()
                 print "date: " date;
                 print "systime:       " systime();
                 print "lasttimestamp: " lasttimestamp;
